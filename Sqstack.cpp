@@ -75,3 +75,78 @@ bool symmery(ElemType str[])
     DestoryStack(st);
     return true;
 }
+//简单表达式求值
+//将中缀表达式转化为后缀表达式
+//exp存放中缀表达式，postexp存放后缀表达式
+void trans(char *exp, char postexp[])
+{
+    char e;
+    SQstack *Optr; //定义运算符栈指针
+    InitStack(Optr);
+    int i = 0; //postexp[]下标
+    while (*exp != '\n')
+    {
+        switch (*exp)
+        {
+        case '(':
+            Push(Optr, *exp);
+            exp++;
+            break;
+        case ')':
+            Pop(Optr, *exp);
+            while (*exp != ')')
+            {
+                Pop(Optr, *exp);
+                postexp[i++] = e;
+            }
+            exp++;
+            break;
+        case '+':
+        case '-':
+            while (!StackEmpty(Optr))
+            {
+                GetTop(Optr, e);
+                if (e != '(')
+                {
+                    Pop(Optr, e);
+                    postexp[i++] = e;
+                }
+                else
+                    break;
+                Push(Optr, *exp);
+                exp++;
+                break;
+            }
+        case '*':
+        case '/':
+            while (!StackEmpty())
+            {
+                GetTop(Optr, e);
+                if (e == '*' || e == '/')
+                {
+                    Pop(Optr, e);
+                    postexp[i++] = e;
+                }
+                else
+                    break;
+                Push(Optr, *exp);
+                exp++;
+                break;
+            }
+        default:
+            while (*exp >= '0' && *exp <= '9')
+            {
+                postexp[i++] = *exp;
+                exp++;
+            }
+            postexp[i++] = '#';
+        }
+    }
+    while (!StackEmpty(Optr))
+    {
+        Pop(Optr, e);
+        postexp[i++] = e;
+    }
+    postexp[i] = '\0';
+    DestoryStack(Optr);
+}
